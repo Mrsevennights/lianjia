@@ -2,8 +2,8 @@ import re
 from lxml import etree
 
 class HtmlParser:
-    items = []
     def parser(self, response):
+        items = []
         try:
             tree = etree.HTML(response.text)
             house_list = tree.xpath('//ul[@id="house-lst"]/li')
@@ -18,7 +18,7 @@ class HtmlParser:
                 rent = ''.join(house.xpath('./div[2]/div[2]/div[1]/span/text()'))
                 time = ''.join(house.xpath('./div[2]/div[2]/div[2]/text()'))
                 has_seen = ''.join(house.xpath('./div[2]/div[3]/div/div[1]/span/text()'))
-                self.items.append({'title': title, 'link': link, 'house_type': house_type, 'area': area,
+                items.append({'title': title, 'link': link, 'house_type': house_type, 'area': area,
                                    'direction': direction, 'description': description, 'tags': tags,
                                    'rent': rent, 'time': time, 'has_seen': has_seen})
             page_num = re.findall(r'https://\S+/zufang/pg(\S*)/', response.url)
@@ -30,6 +30,6 @@ class HtmlParser:
                 next_page = 'end'
             else:
                 next_page = response.url[0: 30] + 'pg' + str(page_num + 1) + '/'
-            return self.items, next_page
+            return items, next_page
         except:
             print(response.status_code)
